@@ -31,16 +31,30 @@ https://github.com/tensorflow/tensorflow/issues/21574
 # Tensorflow on RPI Original (Deprecated):
 https://github.com/samjabrahams/tensorflow-on-raspberry-pi/blob/master/GUIDE.md
 
-# Cross Compiling Tensorflow for Armv6l (Rpi A, A+, Zero) with Multithreading:
+# Cross Compiling Tensorflow for Armv6l (Rpi A, A+, Zero) with Multithreading (DOESN'T WORK):
+Use tensorflow 1.11 and bazel 0.15.2
+
+Install bazel from source:
+sudo apt-get install openjdk-8-jdk zip python g++ gcc
+wget https://github.com/bazelbuild/bazel/releases/download/0.15.2/bazel-0.15.2-dist.zip
+unzip ~/bazel-0.15.2-dist.zip -d bazel-0.15.2-dist
+cd bazel-0.15.2-dist
+./compile.sh
+sudo cp output/bazel /usr/local/bin
+
 https://www.tensorflow.org/install/source_rpi
 git clone https://github.com/tensorflow/tensorflow.git
 cd tensorflow
+git checkout r1.11
 git fetch origin pull/25748/head:multithread
-git checkout multithread
+
+nano tools/ci_build/install/install_pi_python3_toolchain.sh
+Remove line `rm -rf /usr/local/bin/bazel`
+Remove `bazel` from last line
 
 CI_DOCKER_EXTRA_PARAMS="-e CI_BUILD_PYTHON=python3 -e CROSSTOOL_PYTHON_INCLUDE_PATH=/usr/include/python3.4" \
     tensorflow/tools/ci_build/ci_build.sh PI-PYTHON3 \
-    tensorflow/tools/ci_build/pi/build_raspberry_pi.sh PI ONE
+    tensorflow/tools/ci_build/pi/build_raspberry_pi.sh PI_ONE
 
 # I2C Communication between Rpi and Arduino:
 https://dzone.com/articles/arduino-and-raspberry-pi-working-together-part-2-now-with-i2

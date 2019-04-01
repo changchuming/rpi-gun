@@ -9,7 +9,7 @@ def main():
     status = False
     while 1:
         status = not status
-        bus.write_byte(address, 10000 if status else 5200)
+        bus.write_byte(address, 1 if status else 5)
         print("Arduino answer to RPI: {}".format(bus.read_byte(address)))
         time.sleep(1)
 if __name__ == '__main__':
