@@ -6,11 +6,13 @@ bus = smbus.SMBus(1)
 address = 0x04
 def main():
     gpio.setmode(gpio.BCM)
+    gpio.setup(17, gpio.OUT)
     status = False
     while 1:
+        gpio.output(17, status)
         status = not status
-        bus.write_byte(address, 1 if status else 5)
-        print("Arduino answer to RPI: {}".format(bus.read_byte(address)))
+        bus.write_byte(address, 1 if status else 0)
+        print("Arduino answer to RPI:{}".format(bus.read_byte(address)))
         time.sleep(1)
 if __name__ == '__main__':
     try:

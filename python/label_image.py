@@ -13,6 +13,7 @@ from tensorflow.contrib.lite.python import interpreter as interpreter_wrapper
 # GPIO settings
 bus = smbus.SMBus(1)
 address = 0x04
+camera = picamera.PiCamera()
 
 def main(args):
   # Setup GPIO
@@ -33,8 +34,8 @@ def main(args):
   width = input_details[0]['shape'][2]
 
   # Initialize camera
-  camera = picamera.PiCamera()
   static_count = 0
+  # i=0
 
   while True:
     stream = io.BytesIO()
@@ -43,7 +44,8 @@ def main(args):
     stream.seek(0)
     image = Image.open(stream)
     image = image.resize((width, height))
-    # image.save('image.jpeg')
+    # image.save(str(i)+'image.jpeg')
+    # i = i+1
 
     # add N dim
     input_data = np.expand_dims(image, axis=0)
@@ -105,7 +107,7 @@ def l2_dist(v, o):
 def move_camera(distance_vector):
   """Convert distances from center of image to theta to move pan tilt camera."""
   print("Vector displacement: {}.".format(distance_vector))
-  thetas = np.clip(distance_vector*7, 0, 7).astype(int)
+  thetas = np.clip(distance_vector*20, -7, 7).astype(int)
   print("Moving cameras by: {}.".format(thetas))
   send_thetas(thetas[0], thetas[1])
 
@@ -115,7 +117,7 @@ def send_thetas(pan_theta, tilt_theta):
   try:
     encoded_thetas = (pan_theta+8)*16+tilt_theta+8
     bus.write_byte(address, encoded_thetas)
-    print("Arduino answer to RPI: {}".format( bus.read_byte(address)))
+    # print("Arduino answer to RPI: {}".format( bus.read_byte(address)))
   except:
     print("Can't contact Arduino. No biggie, it might be doing something.")
 
@@ -123,7 +125,7 @@ def shoot_water():
   """Sends 0, which will cause Arduino to shoot water."""
   try:
     bus.write_byte(address, 0)
-    print("Arduino answer to RPI: {}".format( bus.read_byte(address)))
+    # print("Arduino answer to RPI: {}".format( bus.read_byte(address)))
   except:
     print("Can't contact Arduino. No biggie, it might be doing something.")
 
